@@ -9,7 +9,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -49,11 +53,25 @@ public class Scrambler {
         return v.substring(0,idx)+"(private)";
     }
 
+    public String jobType(String v) throws IOException, GeneralSecurityException {
+        if (v.startsWith("hudson-") || v.startsWith("org-jvnet-hudson"))
+            return v;
+
+        return "private-"+string(v);
+    }
+
     public void handleJSONObject(JSONObject o) throws IOException, GeneralSecurityException {
         o.put("install",hex(o.getString("install")));
         for (JSONObject item : (List<JSONObject>)(List)o.getJSONArray("plugins")) {
             item.put("name",listOfPublicPlugins.escape(item.getString("name")));
             item.put("version",version(item.getString("version")));
+        }
+
+        JSONObject jobs = o.getJSONObject("jobs");
+        Map<String,Object> copy = new HashMap<String,Object>(jobs);
+        jobs.clear();
+        for (Map.Entry<String,Object> e : copy.entrySet()) {
+            jobs.put(jobType(e.getKey()),e.getValue());
         }
         o.put("version",version(o.getString("version")));
 
