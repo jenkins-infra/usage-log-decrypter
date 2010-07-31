@@ -8,7 +8,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -44,10 +43,19 @@ public class Scrambler {
         return new String(Hex.encode(cipher.doFinal(pluginName.getBytes("UTF-8"))));
     }
 
+    public String version(String v) throws IOException, GeneralSecurityException {
+        int idx = v.indexOf("(private");
+        if (idx<0)      return v;
+        return v.substring(0,idx)+"(private)";
+    }
+
     public void handleJSONObject(JSONObject o) throws IOException, GeneralSecurityException {
         o.put("install",hex(o.getString("install")));
         for (JSONObject item : (List<JSONObject>)(List)o.getJSONArray("plugins")) {
             item.put("name",listOfPublicPlugins.escape(item.getString("name")));
+            item.put("version",version(item.getString("version")));
         }
+        o.put("version",version(o.getString("version")));
+
     }
 }

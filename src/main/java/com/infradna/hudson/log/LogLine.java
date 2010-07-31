@@ -1,7 +1,6 @@
 package com.infradna.hudson.log;
 
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.time.FastDateFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
