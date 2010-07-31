@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class LogLine {
     public String remoteIp;
+    public String timestampString;
     public Date timestamp;
     public String request;
     public int status;
@@ -50,7 +51,8 @@ public class LogLine {
         LogLine ll = new LogLine();
         ll.remoteIp = tokens.get(0);
         synchronized (fdf) {
-            ll.timestamp = (Date)fdf.parseObject(trimQuote(tokens.get(3)));
+            ll.timestampString = trimQuote(tokens.get(3));
+            ll.timestamp = (Date)fdf.parseObject(ll.timestampString);
         }
         ll.request = trimQuote(tokens.get(4));
         ll.status = Integer.parseInt(tokens.get(5));

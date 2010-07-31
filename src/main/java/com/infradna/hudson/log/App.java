@@ -1,31 +1,32 @@
 package com.infradna.hudson.log;
 
 import com.trilead.ssh2.crypto.Base64;
+import hudson.Util;
 import hudson.model.UsageStatistics.CombinedCipherInputStream;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Hello world!
@@ -34,11 +35,25 @@ import java.util.zip.GZIPInputStream;
 public class App 
 {
     public static void main( String[] _args ) throws Exception  {
-        Cipher cipher = createCipher(new File(_args[0]));
+        File keyFile = new File(_args[0]);
+        Scrambler sc = new Scrambler(Hex.decode(Util.getDigestOf(_args[1])));
+        File outDir = new File(_args[2]);
+
+        Cipher cipher = createCipher(keyFile);
 
         List<String> a = Arrays.asList(_args);
-        for (String log : a.subList(1,a.size())) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(log))));
+        for (String log : a.subList(3,a.size())) {
+            File logFile = new File(log);
+            File outFile = new File(outDir, logFile.getName());
+
+            if (outFile.exists() && outFile.lastModified()>logFile.lastModified()) {
+                System.out.println("Skipping "+log);
+                continue;
+            }
+            System.out.println("Handling "+log);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(logFile))));
+            PrintWriter w = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(outFile)))));
             try {
                 String line;
                 while ((line=in.readLine())!=null) {
@@ -46,11 +61,23 @@ public class App
                     String url = ll.getRequestUrl();
                     if (!url.startsWith("/usage-stats.js?"))
                         continue;
-                    ll.usage = decrypt(cipher, url.substring(url.indexOf('?') + 1));
-                    System.out.println(ll.usage);
+                    try {
+                        ll.usage = decrypt(cipher, url.substring(url.indexOf('?') + 1));
+                    } catch (IOException e) {
+                        System.err.println("Failed to handle "+line);
+                        continue;
+                    } catch (GeneralSecurityException e) {
+                        System.err.println("Failed to handle "+line);
+                        continue;
+                    }
+                    sc.handleJSONObject(ll.usage);
+                    ll.usage.put("timestamp",ll.timestampString);
+
+                    w.println(ll.usage);
                 }
             } finally {
                 in.close();
+                w.close();
             }
         }
     }

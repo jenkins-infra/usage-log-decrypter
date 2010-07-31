@@ -15,6 +15,12 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+      <!--<plugin>-->
+        <!--<artifactId>maven-exec-plugin</artifactId>-->
+        <!--<configuration>-->
+          <!--<mainClass>com.infradna.hudson.log.App</mainClass>-->
+        <!--</configuration>-->
+      <!--</plugin>-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -25,6 +31,11 @@
             <phase>package</phase>
             <configuration>
               <descriptorId>jar-with-dependencies</descriptorId>
+              <archive>
+                <manifest>
+                  <mainClass>com.infradna.hudson.log.App</mainClass>
+                </manifest>
+              </archive>
             </configuration>
           </execution>
         </executions>
