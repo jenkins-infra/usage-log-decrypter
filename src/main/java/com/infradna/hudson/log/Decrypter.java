@@ -31,6 +31,7 @@ import java.util.zip.GZIPOutputStream;
 public class Decrypter {
     private final Cipher cipher;
     private final Scrambler scrambler;
+    private final LogLineFactory llf = new LogLineFactory();
 
     public Decrypter(File keyFile, Scrambler scrambler) throws IOException, GeneralSecurityException {
         this.cipher = createCipher(keyFile);
@@ -68,7 +69,7 @@ public class Decrypter {
             String line;
             while ((line=in.readLine())!=null) {
                 try {
-                    LogLine ll = LogLine.parse(line);
+                    LogLine ll = llf.parse(line);
                     String url = ll.getRequestUrl();
                     if (!url.startsWith("/usage-stats.js?"))
                         continue;
@@ -90,6 +91,7 @@ public class Decrypter {
 
                     w.println(ll.usage);
                 } catch (ParseException e) {
+                    System.err.println("Failed to handle "+line);
                     e.printStackTrace();
                 }
             }
