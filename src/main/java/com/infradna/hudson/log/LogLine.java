@@ -31,34 +31,38 @@ public class LogLine {
     }
 
     public static LogLine parse(String line) throws ParseException {
-        List<String> tokens = new ArrayList<String>(16);
-        for (int i=0; i<line.length();) {
-            char head = line.charAt(i);
-            int end;
-            if (head=='\"')
-                end = line.indexOf('"',i+1)+1;
-            else if (head=='[')
-                end = line.indexOf(']',i+1)+1;
-            else
-                end = line.indexOf(' ',i);
-            if (end<=0)
-                end = line.length();
-            tokens.add(line.substring(i,end));
-            i = end+1;
-        }
+        try {
+            List<String> tokens = new ArrayList<String>(16);
+            for (int i=0; i<line.length();) {
+                char head = line.charAt(i);
+                int end;
+                if (head=='\"')
+                    end = line.indexOf('"',i+1)+1;
+                else if (head=='[')
+                    end = line.indexOf(']',i+1)+1;
+                else
+                    end = line.indexOf(' ',i);
+                if (end<=0)
+                    end = line.length();
+                tokens.add(line.substring(i,end));
+                i = end+1;
+            }
 
-        LogLine ll = new LogLine();
-        ll.remoteIp = tokens.get(0);
-        synchronized (fdf) {
-            ll.timestampString = trimQuote(tokens.get(3));
-            ll.timestamp = (Date)fdf.parseObject(ll.timestampString);
-        }
-        ll.request = trimQuote(tokens.get(4));
-        ll.status = Integer.parseInt(tokens.get(5));
-        ll.referer = trimQuote(tokens.get(7));
-        ll.userAgent = trimQuote(tokens.get(8));
+            LogLine ll = new LogLine();
+            ll.remoteIp = tokens.get(0);
+            synchronized (fdf) {
+                ll.timestampString = trimQuote(tokens.get(3));
+                ll.timestamp = (Date)fdf.parseObject(ll.timestampString);
+            }
+            ll.request = trimQuote(tokens.get(4));
+            ll.status = Integer.parseInt(tokens.get(5));
+            ll.referer = trimQuote(tokens.get(7));
+            ll.userAgent = trimQuote(tokens.get(8));
 
-        return ll;
+            return ll;
+        } catch (NumberFormatException e) {
+            throw new ParseException(e.getMessage(),0);
+        }
     }
 
     private static String trimQuote(String s) {
