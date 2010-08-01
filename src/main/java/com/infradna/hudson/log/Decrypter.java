@@ -69,6 +69,8 @@ public class Decrypter {
             String line;
             while ((line=in.readLine())!=null) {
                 try {
+                    if (line.indexOf("usage-stats.js")<0)   continue;   // throw away unrelated lines quickly
+                    
                     LogLine ll = llf.parse(line);
                     String url = ll.getRequestUrl();
                     if (!url.startsWith("/usage-stats.js?"))
