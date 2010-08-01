@@ -66,6 +66,6 @@ public class LogLineFactory {
         }
     }
 
-    private static final Pattern SESSIONID_PATTERN = Pattern.compile("[0-9A-F\\-]+");
+    private static final Pattern SESSIONID_PATTERN = Pattern.compile("[0-9A-Fa-f\\-]+");
     private final SimpleDateFormat fdf = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 }
