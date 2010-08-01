@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -48,21 +49,30 @@ public class LogLine {
                 i = end+1;
             }
 
+            // for a brief period, Java.net access log had session ID in the 4th field.
+            int offset=0;
+            if (isHex(tokens.get(3)))
+                offset = 1;
+
             LogLine ll = new LogLine();
             ll.remoteIp = tokens.get(0);
             synchronized (fdf) {
-                ll.timestampString = trimQuote(tokens.get(3));
+                ll.timestampString = trimQuote(tokens.get(offset+3));
                 ll.timestamp = (Date)fdf.parseObject(ll.timestampString);
             }
-            ll.request = trimQuote(tokens.get(4));
-            ll.status = Integer.parseInt(tokens.get(5));
-            ll.referer = trimQuote(tokens.get(7));
-            ll.userAgent = trimQuote(tokens.get(8));
+            ll.request = trimQuote(tokens.get(offset+4));
+            ll.status = Integer.parseInt(tokens.get(offset+5));
+            ll.referer = trimQuote(tokens.get(offset+7));
+            ll.userAgent = trimQuote(tokens.get(offset+8));
 
             return ll;
         } catch (NumberFormatException e) {
             throw new ParseException(e.getMessage(),0);
         }
+    }
+
+    private static boolean isHex(String s) {
+        return HEX_PATTERN.matcher(s).matches();
     }
 
     private static String trimQuote(String s) {
@@ -76,5 +86,6 @@ public class LogLine {
         }
     }
 
+    private static final Pattern HEX_PATTERN = Pattern.compile("[0-9A-F]+");
     private static final SimpleDateFormat fdf = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 }
