@@ -28,9 +28,16 @@ public class App
             futures.add(es.submit(new Runnable() {
                 public void run() {
                     try {
-                        new Decrypter(keyFile,new Scrambler(secret)).process(
-                                new File(log),
-                                new File(outDir, new File(log).getName()));
+                        File in = new File(log);
+                        File out = new File(outDir, new File(log).getName());
+
+                        if (out.exists() && out.lastModified()>in.lastModified()) {
+                            System.out.println("Skipping "+in);
+                            return;
+                        }
+                        System.out.println("Handling "+in);
+
+                        new Decrypter(keyFile,new Scrambler(secret)).process(in,out);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (GeneralSecurityException e) {

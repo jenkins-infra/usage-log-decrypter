@@ -60,12 +60,6 @@ public class Decrypter {
     }
 
     public void process(File logFile, File outFile) throws IOException, GeneralSecurityException {
-        if (outFile.exists() && outFile.lastModified()>logFile.lastModified()) {
-            System.out.println("Skipping "+logFile);
-            return;
-        }
-        System.out.println("Handling "+logFile);
-
         File tmpFile = File.createTempFile("log","tmp",outFile.getParentFile());
 
         BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(logFile))));
