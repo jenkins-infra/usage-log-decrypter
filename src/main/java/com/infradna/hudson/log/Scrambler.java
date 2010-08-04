@@ -10,10 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -49,8 +47,17 @@ public class Scrambler {
 
     public String version(String v) throws IOException, GeneralSecurityException {
         int idx = v.indexOf("(private");
-        if (idx<0)      return v;
-        return v.substring(0,idx)+"(private)";
+        if (idx>=0)      return v.substring(0,idx)+"(private)";
+
+        // mask out other (...)
+        idx = v.indexOf('(');
+        if (idx>=0) {
+            int e = v.indexOf(')',idx);
+            if (e>=0)
+                v = v.substring(0,idx)+"(***)"+v.substring(e+1);
+        }
+        
+        return v;
     }
 
     public String jobType(String v) throws IOException, GeneralSecurityException {
