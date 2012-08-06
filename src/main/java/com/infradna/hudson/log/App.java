@@ -10,6 +10,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -48,8 +49,13 @@ public class App
             }));
         }
 
-        for (Future f : futures)
-            f.get();
+        for (Future f : futures) {
+            try {
+                f.get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
         es.shutdown();
     }
 }
