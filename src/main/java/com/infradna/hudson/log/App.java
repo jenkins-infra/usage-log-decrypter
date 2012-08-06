@@ -1,6 +1,7 @@
 package com.infradna.hudson.log;
 
 import hudson.Util;
+import hudson.util.DaemonThreadFactory;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
@@ -20,7 +21,7 @@ public class App
         final File outDir = new File(_args[2]);
         final byte[] secret = Hex.decode(Util.getDigestOf(_args[1]));
 
-        ExecutorService es = Executors.newFixedThreadPool(8);
+        ExecutorService es = Executors.newFixedThreadPool(8,new DaemonThreadFactory());
 
         List<Future> futures = new ArrayList<Future>();
         List<String> a = Arrays.asList(_args);
