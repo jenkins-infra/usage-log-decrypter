@@ -61,7 +61,7 @@ public class Scrambler {
     }
 
     public String jobType(String v) throws IOException, GeneralSecurityException {
-        if (v.startsWith("hudson-") || v.startsWith("org-jvnet-hudson"))
+        if (v.startsWith("hudson-") || v.startsWith("org-jvnet-hudson") || v.startsWith("org-jenkinsci"))
             return v;
 
         return "private-"+string(v);
