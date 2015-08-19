@@ -1,4 +1,4 @@
-package com.infradna.hudson.log;
+package org.jenkinsci.infra.log;
 
 import hudson.Util;
 import hudson.util.DaemonThreadFactory;

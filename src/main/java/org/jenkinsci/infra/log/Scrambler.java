@@ -1,4 +1,4 @@
-package com.infradna.hudson.log;
+package org.jenkinsci.infra.log;
 
 import com.trilead.ssh2.crypto.Base64;
 import net.sf.json.JSONObject;
