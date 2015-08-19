@@ -12,6 +12,8 @@ import static org.junit.Assert.*;
 public class ListOfJobTypesTest {
     @Test
     public void sanity() throws IOException {
-        assertTrue(new ListOfJobTypes().isPublic("hudson-model-FreeStyleProject"));
+        ListOfJobTypes l = new ListOfJobTypes();
+        assertTrue(l.isPublic("hudson-model-FreeStyleProject"));
+        assertTrue(l.isPublic("org-cloudbees-literate-jenkins-LiterateBranchProject"));
     }
 }

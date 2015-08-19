@@ -28,6 +28,13 @@ public class ListOfJobTypes {
      *      The job type in JSON key-safe format, which replaces '.' with '-'.
      */
     public boolean isPublic(String jsonKey) {
+        // anything in the public namespace
+        if (jsonKey.startsWith("hudson-")
+         || jsonKey.startsWith("org-jvnet-hudson")
+         || jsonKey.startsWith("org-jenkinsci"))
+            return true;
+
+        // other ones that are in the public update center
         return fqcns.contains(jsonKey.replace('-','.'));
     }
 }
