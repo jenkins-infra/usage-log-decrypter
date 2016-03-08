@@ -79,7 +79,7 @@ public class Decrypter {
                         String data = url.substring(url.indexOf('?') + 1);
                         if (data.length()==0)   continue;   // there seems to be many of those
                         ll.usage = decrypt(cipher, data);
-                    } catch (IOException|GeneralSecurityException e) {
+                    } catch (IOException|GeneralSecurityException|NumberFormatException e) {
                         System.err.println("Failed to handle "+line);
                         e.printStackTrace();
                         continue;
