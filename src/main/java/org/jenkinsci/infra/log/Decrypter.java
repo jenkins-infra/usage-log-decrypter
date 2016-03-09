@@ -84,6 +84,10 @@ public class Decrypter {
                         e.printStackTrace();
                         continue;
                     }
+                    if (ll.usage.isNullObject()) {
+                        System.err.println("Failed to handle "+line);
+                        continue;
+                    }
                     scrambler.handleJSONObject(ll.usage);
                     ll.usage.put("timestamp",ll.timestampString);
 
