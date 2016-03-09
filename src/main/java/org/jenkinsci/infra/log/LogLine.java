@@ -23,11 +23,15 @@ public class LogLine {
 
     public JSONObject usage;
 
-    public String getRequestUrl() {
-        // skip off the HTTP verb
-        String s = request.substring(request.indexOf(' ')+1);
-        // skip off the HTTP version
-        s = s.substring(0,s.lastIndexOf(' '));
-        return s;
+    public String getRequestUrl() throws ParseException {
+        try {
+            // skip off the HTTP verb
+            String s = request.substring(request.indexOf(' ') + 1);
+            // skip off the HTTP version
+            s = s.substring(0, s.lastIndexOf(' '));
+            return s;
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new ParseException("Failed to parse request URL: "+request,0);
+        }
     }
 }
