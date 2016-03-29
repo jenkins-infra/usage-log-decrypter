@@ -1,5 +1,6 @@
 package org.jenkinsci.infra.log;
 
+import com.google.common.base.Predicate;
 import com.trilead.ssh2.crypto.Base64;
 import hudson.model.UsageStatistics.CombinedCipherInputStream;
 import net.sf.json.JSONObject;
@@ -32,6 +33,7 @@ public class Decrypter {
     private final Cipher cipher;
     private final Scrambler scrambler;
     private final LogLineFactory llf = new LogLineFactory();
+    private final Predicate<LogLine> infra621 = new INFRA621();
 
     public Decrypter(File keyFile, Scrambler scrambler) throws IOException, GeneralSecurityException {
         this.cipher = createCipher(keyFile);
@@ -86,6 +88,9 @@ public class Decrypter {
                     }
                     if (ll.usage.isNullObject()) {
                         System.err.println("Failed to handle "+line);
+                        continue;
+                    }
+                    if (infra621.apply(ll)) {
                         continue;
                     }
                     scrambler.handleJSONObject(ll.usage);
