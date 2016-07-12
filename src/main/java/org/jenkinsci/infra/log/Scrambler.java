@@ -74,11 +74,13 @@ public class Scrambler {
             item.put("version",version(item.getString("version")));
         }
 
-        JSONObject jobs = o.getJSONObject("jobs");
-        Map<String,Object> copy = new HashMap<String,Object>(jobs);
-        jobs.clear();
-        for (Map.Entry<String,Object> e : copy.entrySet()) {
-            jobs.put(jobType(e.getKey()),e.getValue());
+        JSONObject jobs = o.optJSONObject("jobs");
+        if (jobs!=null) {
+            Map<String, Object> copy = new HashMap<String, Object>(jobs);
+            jobs.clear();
+            for (Map.Entry<String, Object> e : copy.entrySet()) {
+                jobs.put(jobType(e.getKey()), e.getValue());
+            }
         }
         o.put("version",version(o.getString("version")));
 
