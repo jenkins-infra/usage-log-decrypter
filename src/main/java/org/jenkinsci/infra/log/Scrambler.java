@@ -1,6 +1,7 @@
 package org.jenkinsci.infra.log;
 
 import com.trilead.ssh2.crypto.Base64;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -69,9 +70,12 @@ public class Scrambler {
 
     public void handleJSONObject(JSONObject o) throws IOException, GeneralSecurityException {
         o.put("install",hex(o.getString("install")));
-        for (JSONObject item : (List<JSONObject>)(List)o.getJSONArray("plugins")) {
-            item.put("name",listOfPublicPlugins.escape(item.getString("name")));
-            item.put("version",version(item.getString("version")));
+        JSONArray plugins = o.optJSONArray("plugins");
+        if (plugins!=null) {
+            for (JSONObject item : (List<JSONObject>) (List) plugins) {
+                item.put("name", listOfPublicPlugins.escape(item.getString("name")));
+                item.put("version", version(item.getString("version")));
+            }
         }
 
         JSONObject jobs = o.optJSONObject("jobs");
