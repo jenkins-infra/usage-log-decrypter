@@ -21,12 +21,14 @@ public class Scrambler {
     private final SecretKey key;
     private final Cipher cipher;
     private final ListOfPublicPlugins listOfPublicPlugins;
+    private final ListOfJobTypes listOfJobTypes;
 
     public Scrambler(byte[] secret) throws GeneralSecurityException, IOException {
         key = new SecretKeySpec(secret,0,128/8, "AES");
         cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, key);
         listOfPublicPlugins = new ListOfPublicPlugins(this);
+        listOfJobTypes = new ListOfJobTypes();
     }
 
     /**
@@ -62,7 +64,7 @@ public class Scrambler {
     }
 
     public String jobType(String v) throws IOException, GeneralSecurityException {
-        if (v.startsWith("hudson-") || v.startsWith("org-jvnet-hudson") || v.startsWith("org-jenkinsci"))
+        if (listOfJobTypes.isPublic(v))
             return v;
 
         return "private-"+string(v);
