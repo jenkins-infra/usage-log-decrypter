@@ -34,6 +34,7 @@ public class Decrypter {
     private final Scrambler scrambler;
     private final LogLineFactory llf = new LogLineFactory();
     private final Predicate<LogLine> infra621 = new INFRA621();
+    private final Predicate<LogLine> publicCores = new PublicCores();
 
     public Decrypter(File keyFile, Scrambler scrambler) throws IOException, GeneralSecurityException {
         this.cipher = createCipher(keyFile);
@@ -91,6 +92,9 @@ public class Decrypter {
                         continue;
                     }
                     if (infra621.apply(ll)) {
+                        continue;
+                    }
+                    if (publicCores.apply(ll)) {
                         continue;
                     }
                     scrambler.handleJSONObject(ll.usage);
