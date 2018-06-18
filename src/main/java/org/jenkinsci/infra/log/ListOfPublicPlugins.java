@@ -20,9 +20,8 @@ public class ListOfPublicPlugins {
     public ListOfPublicPlugins(Scrambler scrambler) throws IOException {
         this.scrambler = scrambler;
 
-        String s = IOUtils.toString(new URL("http://updates.jenkins-ci.org/update-center.json").openStream(), "UTF-8");
-        s = s.substring(s.indexOf('{'));
-        s = s.substring(0, s.lastIndexOf('}')+1);
+        // use the experimental update center to include plugins that are considered alpha/beta only
+        String s = IOUtils.toString(new URL("http://updates.jenkins-ci.org/experimental/update-center.actual.json").openStream(), "UTF-8");
 
         JSONObject o = JSONObject.fromObject(s);
         publicPluginNames = new HashSet<String>(o.getJSONObject("plugins").keySet());
