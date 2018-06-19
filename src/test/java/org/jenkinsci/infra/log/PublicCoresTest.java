@@ -2,12 +2,17 @@ package org.jenkinsci.infra.log;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class PublicCoresTest {
     private final PublicCores i = new PublicCores();
-    
+
+    public PublicCoresTest() throws IOException {
+    }
+
     @Test
     public void basics() {
         y("1.642");
