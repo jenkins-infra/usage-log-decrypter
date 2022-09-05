@@ -54,5 +54,7 @@ org.jenkinsci.plugins.drupal.projects.DrupalProject
 org.jenkinsci.plugins.jobgenerator.JobGenerator
 org.jenkinsci.plugins.pipeline.multibranch.defaults.PipelineMultiBranchDefaultsProject
 org.jenkinsci.plugins.spoontrigger.SpoonProject
+org.jenkinsci.plugins.updatebot.ImportGithubRepoProject
 org.jenkinsci.plugins.workflow.job.WorkflowJob
 org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
+org.jvnet.hudson.test.MockFolder
