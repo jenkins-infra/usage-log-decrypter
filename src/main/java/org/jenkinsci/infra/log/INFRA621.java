@@ -1,14 +1,14 @@
 package org.jenkinsci.infra.log;
 
-import com.google.common.base.Predicate;
 import hudson.util.VersionNumber;
+import java.util.function.Predicate;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 public class INFRA621 implements Predicate<LogLine> {
     @Override
-    public boolean apply(LogLine ll) {
+    public boolean test(LogLine ll) {
         return isAffected(ll.usage.getString("version"));
     }
 

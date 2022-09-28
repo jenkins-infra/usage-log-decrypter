@@ -1,25 +1,26 @@
 package org.jenkinsci.infra.log;
 
-import com.google.common.base.Predicate;
-import hudson.util.IOUtils;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Predicate;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author Daniel Beck
  */
 public class PublicCores implements Predicate<LogLine> {
 
-    private HashSet<String> publicCores;
+    private final HashSet<String> publicCores;
 
     public PublicCores() throws IOException {
         publicCores = new HashSet<>();
         
-        String s = IOUtils.toString(new URL("https://repo.jenkins-ci.org/api/search/versions?g=org.jenkins-ci.main&a=jenkins-core&repos=releases").openStream(), "UTF-8");
+        String s = IOUtils.toString(new URL("https://repo.jenkins-ci.org/api/search/versions?g=org.jenkins-ci.main&a=jenkins-core&repos=releases").openStream(), StandardCharsets.UTF_8);
         JSONArray o = JSONObject.fromObject(s).getJSONArray("results");
 
         for (int i = 0; i < o.size(); i++) {
@@ -29,7 +30,7 @@ public class PublicCores implements Predicate<LogLine> {
     }
 
     @Override
-    public boolean apply(LogLine ll) {
+    public boolean test(LogLine ll) {
         return !isPublic(ll.usage.getString("version"));
     }
 

@@ -1,9 +1,10 @@
 package org.jenkinsci.infra.log;
 
-import com.trilead.ssh2.crypto.Base64;
+import hudson.Util;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -34,18 +35,18 @@ public class Scrambler {
     /**
      * Scrambles a base64 string and set it back to 64bit again.
      */
-    public String base64(String s) throws IOException, GeneralSecurityException {
+    public String base64(String s) throws GeneralSecurityException {
         // add the magic suffix which works like a check sum.
-        return new String(Base64.encode(cipher.doFinal(Base64.decode(s.toCharArray()))));
+        return new String(Base64.getEncoder().encode(cipher.doFinal(Base64.getDecoder().decode(s))));
     }
 
-    public String hex(String s) throws IOException, GeneralSecurityException {
+    public String hex(String s) throws GeneralSecurityException {
         // add the magic suffix which works like a check sum.
-        return new String(Hex.encode(cipher.doFinal(Hex.decode(s))));
+        return Util.toHexString(cipher.doFinal(Util.fromHexString(s)));
     }
 
     public String string(String pluginName) throws IOException, GeneralSecurityException {
-        return new String(Hex.encode(cipher.doFinal(pluginName.getBytes("UTF-8"))));
+        return Util.toHexString(cipher.doFinal(pluginName.getBytes(StandardCharsets.UTF_8)));
     }
 
     public String version(String v) throws IOException, GeneralSecurityException {
