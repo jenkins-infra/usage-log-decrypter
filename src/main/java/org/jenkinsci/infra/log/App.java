@@ -2,7 +2,6 @@ package org.jenkinsci.infra.log;
 
 import hudson.Util;
 import hudson.util.DaemonThreadFactory;
-import org.bouncycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,36 +19,32 @@ public class App
     public static void main( String[] _args ) throws Exception  {
         final File keyFile = new File(_args[0]);
         final File outDir = new File(_args[2]);
-        final byte[] secret = Hex.decode(Util.getDigestOf(_args[1]));
+        final byte[] secret = Util.fromHexString(Util.getDigestOf(_args[1]));
 
         ExecutorService es = Executors.newFixedThreadPool(8,new DaemonThreadFactory());
 
-        List<Future> futures = new ArrayList<Future>();
+        List<Future> futures = new ArrayList<>();
         List<String> a = Arrays.asList(_args);
         for (final String log : a.subList(3,a.size())) {
-            futures.add(es.submit(new Runnable() {
-                public void run() {
-                    try {
-                        File in = new File(log);
-                        File out = new File(outDir, new File(log).getName());
+            futures.add(es.submit(() -> {
+                try {
+                    File in = new File(log);
+                    File out = new File(outDir, new File(log).getName());
 
-                        if (out.exists() && out.lastModified()>in.lastModified()) {
-                            System.out.println("Skipping "+in);
-                            return;
-                        }
-                        System.out.println("Handling "+in);
-
-                        new Decrypter(keyFile,new Scrambler(secret)).process(in,out);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
+                    if (out.exists() && out.lastModified()>in.lastModified()) {
+                        System.out.println("Skipping "+in);
+                        return;
                     }
+                    System.out.println("Handling "+in);
+
+                    new Decrypter(keyFile,new Scrambler(secret)).process(in,out);
+                } catch (IOException | GeneralSecurityException e) {
+                    e.printStackTrace();
                 }
             }));
         }
 
-        for (Future f : futures) {
+        for (Future<?> f : futures) {
             try {
                 f.get();
             } catch (ExecutionException e) {

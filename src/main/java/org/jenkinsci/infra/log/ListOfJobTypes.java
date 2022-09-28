@@ -3,6 +3,7 @@ package org.jenkinsci.infra.log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ public class ListOfJobTypes {
     private final Set<String> fqcns = new HashSet<String>();
 
     public ListOfJobTypes() throws IOException {
-        BufferedReader r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("job-types.txt"),"UTF-8"));
+        BufferedReader r = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("job-types.txt"), StandardCharsets.UTF_8));
         String line;
         while ((line=r.readLine())!=null) {
             line = line.trim();
