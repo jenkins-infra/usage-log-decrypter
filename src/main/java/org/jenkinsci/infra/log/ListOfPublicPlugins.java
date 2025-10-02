@@ -21,7 +21,7 @@ public class ListOfPublicPlugins {
         this.scrambler = scrambler;
 
         // use the experimental update center to include plugins that are considered alpha/beta only
-        String s = IOUtils.toString(new URL("http://updates.jenkins-ci.org/experimental/update-center.actual.json").openStream(), "UTF-8");
+        String s = IOUtils.toString(new URL("https://updates.jenkins-ci.org/experimental/update-center.actual.json").openStream(), "UTF-8");
 
         JSONObject o = JSONObject.fromObject(s);
         publicPluginNames = new HashSet<String>(o.getJSONObject("plugins").keySet());
